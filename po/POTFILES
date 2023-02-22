@@ -1,0 +1,6 @@
+data/com.zuel.vjohn.TokenVerification.desktop.in
+data/com.zuel.vjohn.TokenVerification.appdata.xml.in
+data/com.zuel.vjohn.TokenVerification.gschema.xml
+src/main.vala
+src/window.vala
+src/window.ui

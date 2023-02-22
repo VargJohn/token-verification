@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zuel Daemon Portal KeycloakJS Test</title>
+    <script
+      type="text/javascript"
+      src="https://zuel.com/auth/js/keycloak.js"
+    ></script>
+	<script>
+		var keycloak;
+function initKeycloak() {
+      keycloak = Keycloak({
+        url: "https://zuel.com/auth/",
+        realm: "zuel",
+        clientId: "zuel-daemon-portal",
+		resource: "zuel-daemon-portal",
+		enableLogging: 'true'
+      });
+
+
+      var loadData = function () {
+        var account = "";
+        if (keycloak.idToken) {
+          account = keycloak.idTokenParsed.email;
+          console.log(account);
+        } else {
+          keycloak.loadUserProfile(
+            function () {
+              account = keycloak.profile.email;
+              console.log(account);
+            },
+            function () {
+              console.log(
+                "Failed to retrieve user details. Please enable claims or account role"
+              );
+            }
+          );
+        }
+        if (!account) {
+          account = "Unknown";
+        }
+        document.getElementById("accountLabel").innerHTML = account;
+      };
+
+      var loadFailure = function () {
+        console.log("Failed to load data.");
+      };
+
+      var reloadData = function () {
+        keycloak.updateToken(60).then(loadData).catch(loadFailure);
+      };
+
+	  var checkLogin = function () {
+        githubLoginKeycloak().then(loadData).catch(loadFailure);
+      };
+		console.log("keycloak Init calling");
+//silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html'
+          //onLoad: "check-sso",
+          //checkLoginIframe: false
+		console.log("RedirectUri", window.location.origin);
+		keycloak.init({
+          onLoad: "login-required",
+          checkLoginIframe: false,
+		  redirectUri: "http://localhost/keycloakinfo.html"
+        })
+        .then(auth => {
+		console.log("ZUELZUELZUEL", keycloak.profile.email);
+		})
+        .catch(function (errorData) {
+          //console.log("keycloak.init error: " + JSON.stringify(errorData));
+		console.log("keycloak.init error");
+        });
+		}
+
+	  function logoutKeycloak() {
+        if (keycloak.authenticated) {
+          keycloak.logout();
+        }
+      }
+      function loginKeycloak() {
+        if (!keycloak.authenticated) {
+          keycloak.login();
+        }
+      }
+      function googleLoginKeycloak() {
+        if (!keycloak.authenticated) {
+          keycloak.login({ idpHint: "google" });
+        }
+      }
+      function githubLoginKeycloak() {
+		console.log("Inside githubLoginKeycloak!");
+    	keycloak.login({ idpHint: "github" });
+		console.log("githubLoginKeycloak finished");
+      }
+      function registerKeycloak() {
+        keycloak.login({ action: "register" });
+      }
+
+      function accountKeycloak() {
+        if (keycloak.authenticated) {
+          keycloak.accountManagement();
+        }
+      }
+
+    </script>
+  </head>
+  <body onload="initKeycloak()">
+    <a id="accountLabel" href="javascript:void(0)" onclick="accountKeycloak()">Guest</a>
+    <a href="javascript:void(0)" onclick="loginKeycloak()">Login</a>
+     <a href="javascript:void(0)" onclick="googleLoginKeycloak()"
+      >Google Login</a
+    >
+    <a href="javascript:void(0)" onclick="githubLoginKeycloak()">Github Login</a>
+    <a href="javascript:void(0)" onclick="logoutKeycloak()">Logout</a>
+  </body>
+</html>
+
+

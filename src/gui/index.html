@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="icon" href="data:;base64,="></link>
+		<script src="https://zuel.com/auth/js/keycloak.js"></script>
+
+	<script>
+		function initKeycloak() {
+			var keycloak = new Keycloak({
+				url: 'https://zuel.com/auth/',
+				realm: 'zuel',
+				clientId: 'zuel-daemon-portal',
+				resource: 'zuel-daemon-portal',
+				enableLogging: 'true',
+				redirectUri: 'https://zuel.com/auth/realms/zuel/broker/github/endpoint'
+			});
+//			redirectUri: 'http://localhost:8000/index.html'
+				//redirectUri: 'https://zuel.com/auth'
+
+		keycloak.onAuthSuccess = function() { alert('authenticated');
+		console.log("Authenticated"); }
+		keycloak.onReady = function() { alert('Ready'); console.log("Ready");}
+		keycloak.onAuthError = function() { alert('Authentication Error');console.log("Authentication Error"); }
+//onLoad: 'login-required',
+//promiseType: 'native'
+			keycloak.init({
+			onLoad: 'login-required',
+			checkLoginIframe: 'false',
+		}).then(auth => {
+			keycloak.load
+		    console.log("token", keycloak.profile.email);
+			alert('Initialization Complete');
+			document.getElementById("placeholder1").innerHTML = "<h1>Logged IN</h1>";
+			/*document.getElementById("placeholder2").innerHTML =
+            	"<a href='https://zuel.com/auth/realms/zuel/protocol/openid-connect/logout?redirect_uri=http://localhost:8000'>Logout</a>";
+			parent.postMessage(location.href, location.origin);*/
+
+		})
+		.catch(function() {
+			alert('failed to initialize');
+		});
+	}
+	</script>
+	</head>
+<body onload="initKeycloak()">
+
+<div id="placeholder1"></div>
+
+</body>
+</html>
+
