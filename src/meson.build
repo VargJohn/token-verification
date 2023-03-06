@@ -26,7 +26,8 @@ json = dependency('json-glib-1.0', method : 'pkg-config')
 template_glib = dependency('template-glib-1.0', required: true)
 webkit = dependency('webkit2gtk-4.0')
 jwt = dependency('libjwt', method : 'pkg-config')
-
+gnutls = dependency('gnutls', method : 'pkg-config')
+gcrypt = dependency('libgcrypt', method : 'pkg-config')
 
 tokenverification_deps = [
   glib,
@@ -34,6 +35,7 @@ tokenverification_deps = [
   gee,
   gobject,
   soup,
+  gcrypt,
   template_glib,
   json
 ]
